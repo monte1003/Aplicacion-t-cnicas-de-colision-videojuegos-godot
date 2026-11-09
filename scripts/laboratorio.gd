@@ -26,6 +26,7 @@ func _ready() -> void:
 	for moneda: Moneda in $Monedas.get_children():
 		moneda.recogida.connect(_al_recoger)
 		_monedas_total += 1
+	add_child(MenuImplementacion.new())
 	_actualizar_texto()
 
 
@@ -47,6 +48,15 @@ func _physics_process(_delta: float) -> void:
 		_manual_pelota1 = not manual.is_empty()
 		_motor_pelota1 = primera.get_colliding_bodies().has(_jugador)
 	_actualizar_texto()
+
+
+## Cuerpos en contacto con `cuerpo` (lo usa el panel de la tecla M)
+func contactos_de(cuerpo: Node) -> Array:
+	return _vecinos(cuerpo)
+
+
+func grupos() -> int:
+	return _grupos
 
 
 ## Vértices del grafo de contactos
@@ -107,7 +117,7 @@ func _actualizar_texto() -> void:
 	var si_no_motor: String = "sí" if _motor_pelota1 else "no"
 	_texto.text = (
 		"LABORATORIO DE COLISIONES\n"
-		+ "Mover: flechas o WASD  |  Espacio: ver AABB  |  Esc: reiniciar\n\n"
+		+ "Mover: flechas o WASD  |  Espacio: ver AABB  |  M: menú  |  Esc: reiniciar\n\n"
 		+ "Choques del jugador (CharacterBody2D): %d\n" % _choques_jugador
 		+ "Rebotes de pelotas (RigidBody2D): %d\n" % _rebotes
 		+ "Monedas recogidas (Area2D): %d de %d\n" % [_monedas_recogidas, _monedas_total]
