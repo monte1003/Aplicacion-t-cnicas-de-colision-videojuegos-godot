@@ -29,6 +29,7 @@ func _ready() -> void:
 	layer = 20
 	_lab = get_parent() as Laboratorio
 	_construir()
+	_crear_boton_inicio()
 	_panel.visible = false
 
 
@@ -69,10 +70,41 @@ func _construir() -> void:
 	caja.add_child(_cuerpo)
 
 	var pie: Label = Label.new()
-	pie.text = "M cerrar  ·  1 a 6 páginas  ·  I inicio"
+	pie.text = "M cerrar  ·  1 a 6 páginas  ·  I o botón: inicio"
 	pie.add_theme_font_size_override("font_size", 16)
 	pie.add_theme_color_override("font_color", Color("b9b2e8"))
 	caja.add_child(pie)
+
+
+## Botón siempre visible para volver a la pantalla de inicio.
+func _crear_boton_inicio() -> void:
+	var boton: Button = Button.new()
+	boton.text = "◀  INICIO"
+	boton.position = Vector2(36.0, 660.0)
+	boton.custom_minimum_size = Vector2(160.0, 44.0)
+	boton.focus_mode = Control.FOCUS_NONE
+	boton.add_theme_font_size_override("font_size", 19)
+	boton.add_theme_color_override("font_color", C_FONDO)
+	boton.add_theme_color_override("font_hover_color", C_FONDO)
+	boton.add_theme_color_override("font_pressed_color", C_FONDO)
+	boton.add_theme_stylebox_override("normal", _caja_boton(Color("ffc857")))
+	boton.add_theme_stylebox_override("hover", _caja_boton(Color("ffe08a")))
+	boton.add_theme_stylebox_override("pressed", _caja_boton(Color("e0a030")))
+	boton.pressed.connect(_volver_al_inicio)
+	add_child(boton)
+
+
+func _caja_boton(relleno: Color) -> StyleBoxFlat:
+	var estilo: StyleBoxFlat = StyleBoxFlat.new()
+	estilo.bg_color = relleno
+	estilo.border_color = C_BORDE
+	estilo.set_border_width_all(3)
+	estilo.set_content_margin_all(4)
+	return estilo
+
+
+func _volver_al_inicio() -> void:
+	get_tree().change_scene_to_file("res://escenas/inicio.tscn")
 
 
 func _unhandled_input(evento: InputEvent) -> void:
@@ -84,7 +116,7 @@ func _unhandled_input(evento: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif tecla.physical_keycode == KEY_I:
 		get_viewport().set_input_as_handled()
-		get_tree().change_scene_to_file("res://escenas/inicio.tscn")
+		_volver_al_inicio()
 	elif _panel.visible:
 		if tecla.physical_keycode >= KEY_1 and tecla.physical_keycode <= KEY_6:
 			_pagina = tecla.physical_keycode - KEY_1
