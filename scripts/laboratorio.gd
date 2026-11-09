@@ -28,7 +28,11 @@ func _ready() -> void:
 		_monedas_total += 1
 	# Se carga por ruta para no depender del registro de clases de Godot
 	var menu: GDScript = load("res://scripts/menu_implementacion.gd")
-	add_child(menu.new())
+	var panel: Node = menu.new()
+	add_child(panel)
+	if Engine.has_meta("pagina_inicial"):
+		panel.abrir_en(int(Engine.get_meta("pagina_inicial")) - 1)
+		Engine.remove_meta("pagina_inicial")
 	_actualizar_texto()
 
 

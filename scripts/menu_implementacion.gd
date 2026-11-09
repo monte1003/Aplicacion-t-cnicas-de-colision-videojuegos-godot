@@ -1,11 +1,12 @@
 class_name MenuImplementacion
 extends CanvasLayer
 ## Panel que explica la implementación mientras corre el laboratorio.
-## M abre y cierra; 1 a 5 cambian de página. Las páginas 2 a 5 leen datos reales.
+## M abre y cierra; 1 a 6 cambian de página; I vuelve al inicio. Las páginas 2 a 6 leen datos reales.
 
 const TITULOS: Array[String] = [
 	"Cuatro tipos de cuerpo",
 	"Círculo contra caja (en vivo)",
+	"El eje separador (en vivo)",
 	"Grupos con DFS (en vivo)",
 	"Capas y máscaras (reales)",
 	"Pruebas en vivo",
@@ -62,13 +63,13 @@ func _construir() -> void:
 	_cuerpo.bbcode_enabled = true
 	_cuerpo.scroll_active = false
 	_cuerpo.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_cuerpo.add_theme_font_size_override("normal_font_size", 20)
-	_cuerpo.add_theme_font_size_override("bold_font_size", 20)
+	_cuerpo.add_theme_font_size_override("normal_font_size", 18)
+	_cuerpo.add_theme_font_size_override("bold_font_size", 18)
 	_cuerpo.add_theme_color_override("default_color", C_TEXTO)
 	caja.add_child(_cuerpo)
 
 	var pie: Label = Label.new()
-	pie.text = "M cerrar   ·   1 a 5 cambian de página"
+	pie.text = "M cerrar  ·  1 a 6 páginas  ·  I inicio"
 	pie.add_theme_font_size_override("font_size", 16)
 	pie.add_theme_color_override("font_color", Color("b9b2e8"))
 	caja.add_child(pie)
@@ -81,8 +82,11 @@ func _unhandled_input(evento: InputEvent) -> void:
 	if tecla.physical_keycode == KEY_M:
 		_alternar()
 		get_viewport().set_input_as_handled()
+	elif tecla.physical_keycode == KEY_I:
+		get_viewport().set_input_as_handled()
+		get_tree().change_scene_to_file("res://escenas/inicio.tscn")
 	elif _panel.visible:
-		if tecla.physical_keycode >= KEY_1 and tecla.physical_keycode <= KEY_5:
+		if tecla.physical_keycode >= KEY_1 and tecla.physical_keycode <= KEY_6:
 			_pagina = tecla.physical_keycode - KEY_1
 			_actualizar()
 			get_viewport().set_input_as_handled()
@@ -106,6 +110,11 @@ func _alternar() -> void:
 		_actualizar()
 
 
+func abrir_en(numero: int) -> void:
+	_panel.visible = true
+	ir_a_pagina(numero)
+
+
 func ir_a_pagina(numero: int) -> void:
 	_pagina = clampi(numero, 0, TITULOS.size() - 1)
 	_actualizar()
@@ -118,8 +127,10 @@ func texto_pagina(numero: int) -> String:
 		1:
 			return _pagina_circulo_caja()
 		2:
-			return _pagina_grupos()
+			return _pagina_sat()
 		3:
+			return _pagina_grupos()
+		4:
 			return _pagina_capas()
 		_:
 			return _pagina_pruebas()
@@ -191,6 +202,38 @@ func _pagina_circulo_caja() -> String:
 	)
 
 
+func _pagina_sat() -> String:
+	var jugador: Jugador = _jugador()
+	var forma: CollisionPolygon2D = _lab.get_node("Obstaculo/Forma") as CollisionPolygon2D
+	if jugador == null or forma == null:
+		return "Faltan el jugador o el obstáculo."
+	var caja: Rect2 = jugador.caja_global()
+	var va: PackedVector2Array = PackedVector2Array([
+		caja.position, Vector2(caja.end.x, caja.position.y), caja.end, Vector2(caja.position.x, caja.end.y)
+	])
+	var vb: PackedVector2Array = PackedVector2Array()
+	for punto: Vector2 in forma.polygon:
+		vb.append(forma.global_transform * punto)
+	var r: Dictionary = ColisionManual.sat_poligonos(va, vb)
+	var veredicto: String = "[color=#ff5a5f][b]SEPARADOS[/b][/color]\n   Algún eje deja un hueco: se detiene sin seguir."
+	if not r.is_empty():
+		var normal: Vector2 = r["normal"]
+		veredicto = "[color=#a6e36e][b]CHOCAN[/b][/color]\n   normal (%.2f, %.2f)   profundidad %.1f" % [normal.x, normal.y, r["profundidad"]]
+	return (
+		"[b]Jugador contra el triángulo[/b]\n"
+		+ "Acércalo al triángulo y mira cómo cambia.\n\n"
+		+ "[color=#ff5fa2][b]1  Ejes[/b][/color]\n"
+		+ "   Normal de cada arista: %d + %d = %d ejes.\n\n" % [va.size(), vb.size(), va.size() + vb.size()]
+		+ "[color=#ff5fa2][b]2  Sombras[/b][/color]\n"
+		+ "   Se proyectan las dos formas en cada eje.\n\n"
+		+ "[color=#ff5fa2][b]3  Solapes[/b][/color]\n"
+		+ "   Si un eje las separa, no chocan.\n"
+		+ "   Si ninguno separa, el de menor solape da normal y profundidad.\n\n"
+		+ "%s\n\n" % veredicto
+		+ "[color=#ffc857]Prueba: rombos a 15 dan 3.5355.[/color]  SAT solo sirve con polígonos convexos."
+	)
+
+
 func _pagina_grupos() -> String:
 	var cuerpos: Array = [_jugador()]
 	cuerpos.append_array(get_tree().get_nodes_in_group("pelotas"))
@@ -232,8 +275,8 @@ func _pagina_capas() -> String:
 		if nodo is StaticBody2D:
 			texto += "   fijo: no escanea a nadie\n"
 		else:
-			texto += "   mira a: %s (máscara %d)\n" % [_nombres_bits(nodo.collision_mask), nodo.collision_mask]
-	texto += "\nCapa = en qué grupo estoy. Máscara = a qué grupos miro. Si ninguna de las dos mira a la otra, el par ni se prueba."
+			texto += "   mira a: %s (%d)\n" % [_nombres_bits(nodo.collision_mask), nodo.collision_mask]
+	texto += "\nEntre paréntesis va el valor de la capa o la máscara.\nSi ninguna de las dos mira a la otra, el par ni se prueba."
 	return texto
 
 

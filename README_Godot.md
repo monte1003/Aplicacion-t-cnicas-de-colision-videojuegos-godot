@@ -9,9 +9,9 @@ en la exposición.
 
 1. Abrir la carpeta con Godot 4.7 (`Importar` -> `project.godot`).
 2. Esperar a que el editor termine de importar (la primera vez construye la caché de clases).
-3. Pulsar **F5**. La escena principal es `escenas/laboratorio.tscn`.
+3. Pulsar **F5**. La escena principal es `escenas/inicio.tscn` (pantalla de inicio con seis niveles); al elegir uno abre `escenas/laboratorio.tscn` con el panel en esa página.
 
-Controles: **M** abre el panel que explica la implementación (páginas 1 a 5) · flechas o WASD mueven al jugador (cuadrado azul) · **Espacio** muestra u oculta
+Controles: **M** abre el panel que explica la implementación (páginas 1 a 6) · **I** vuelve al inicio · flechas o WASD mueven al jugador (cuadrado azul) · **Espacio** muestra u oculta
 las cajas envolventes (AABB) y las líneas de contacto · **Esc** reinicia.
 
 Pruebas sin abrir el editor (el ejecutable puede llamarse `godot`, `godot4` o `Godot_v4.x_win64_console.exe`):
@@ -32,6 +32,7 @@ godot --headless --path . --script res://scripts/pruebas_manuales.gd
 | `escenas/moneda.tscn` | Area2D | Zona de detección sin bloqueo físico. |
 | `scripts/colision_manual.gd` | RefCounted | Círculo-círculo, AABB-AABB, círculo-AABB y SAT escritos a mano. |
 | `scripts/laboratorio.gd` | Node2D | Contadores, AABB, grafo de contactos (DFS) y comparación manual/motor. |
+| `escenas/inicio.tscn` + `scripts/inicio.gd` | Control | Pantalla de inicio: seis niveles (teclas 1 a 6 o clic); abre el laboratorio con el panel en la página elegida. |
 | `scripts/menu_implementacion.gd` | CanvasLayer | Panel con la tecla M: explica los cuerpos, círculo-AABB, DFS, capas y pruebas leyendo datos reales de la escena. |
 | `scripts/pruebas_manuales.gd` | SceneTree | 17 comprobaciones con cálculos hechos a mano. |
 
