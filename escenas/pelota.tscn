@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/pelota.gd" id="1_pelota"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pelota"]
+friction = 0.0
+bounce = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pelota"]
+radius = 20.0
+
+[node name="Pelota" type="RigidBody2D" groups=["pelotas"]]
+collision_layer = 4
+collision_mask = 7
+physics_material_override = SubResource("PhysicsMaterial_pelota")
+gravity_scale = 0.0
+can_sleep = false
+contact_monitor = true
+max_contacts_reported = 8
+linear_damp_mode = 1
+angular_damp_mode = 1
+script = ExtResource("1_pelota")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pelota")

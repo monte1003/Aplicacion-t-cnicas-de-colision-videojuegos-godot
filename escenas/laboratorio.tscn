@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/laboratorio.gd" id="1_laboratorio"]
+[ext_resource type="PackedScene" path="res://escenas/paredes.tscn" id="2_paredes"]
+[ext_resource type="PackedScene" path="res://escenas/obstaculo.tscn" id="3_obstaculo"]
+[ext_resource type="PackedScene" path="res://escenas/jugador.tscn" id="4_jugador"]
+[ext_resource type="PackedScene" path="res://escenas/pelota.tscn" id="5_pelota"]
+[ext_resource type="PackedScene" path="res://escenas/moneda.tscn" id="6_moneda"]
+[ext_resource type="Script" path="res://scripts/superposicion.gd" id="7_superposicion"]
+
+[node name="Laboratorio" type="Node2D"]
+script = ExtResource("1_laboratorio")
+
+[node name="Paredes" parent="." instance=ExtResource("2_paredes")]
+
+[node name="Obstaculo" parent="." instance=ExtResource("3_obstaculo")]
+position = Vector2(640, 380)
+
+[node name="Jugador" parent="." instance=ExtResource("4_jugador")]
+position = Vector2(160, 360)
+
+[node name="Pelotas" type="Node2D" parent="."]
+
+[node name="Pelota1" parent="Pelotas" instance=ExtResource("5_pelota")]
+position = Vector2(900, 180)
+velocidad_inicial = Vector2(280, 190)
+
+[node name="Pelota2" parent="Pelotas" instance=ExtResource("5_pelota")]
+position = Vector2(400, 560)
+velocidad_inicial = Vector2(-230, -210)
+
+[node name="Pelota3" parent="Pelotas" instance=ExtResource("5_pelota")]
+position = Vector2(1000, 560)
+velocidad_inicial = Vector2(-300, -120)
+
+[node name="Monedas" type="Node2D" parent="."]
+
+[node name="Moneda1" parent="Monedas" instance=ExtResource("6_moneda")]
+position = Vector2(420, 180)
+
+[node name="Moneda2" parent="Monedas" instance=ExtResource("6_moneda")]
+position = Vector2(860, 380)
+
+[node name="Moneda3" parent="Monedas" instance=ExtResource("6_moneda")]
+position = Vector2(540, 600)
+
+[node name="Superposicion" type="Node2D" parent="."]
+z_index = 10
+script = ExtResource("7_superposicion")
+
+[node name="Interfaz" type="CanvasLayer" parent="."]
+
+[node name="Texto" type="Label" parent="Interfaz"]
+offset_left = 36.0
+offset_top = 30.0
+offset_right = 780.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 17

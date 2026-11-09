@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/paredes.gd" id="1_paredes"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_paredes"]
+friction = 0.0
+bounce = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
+size = Vector2(1280, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
+size = Vector2(20, 720)
+
+[node name="Paredes" type="StaticBody2D"]
+physics_material_override = SubResource("PhysicsMaterial_paredes")
+script = ExtResource("1_paredes")
+
+[node name="Arriba" type="CollisionShape2D" parent="."]
+position = Vector2(640, 10)
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="Abajo" type="CollisionShape2D" parent="."]
+position = Vector2(640, 710)
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="Izquierda" type="CollisionShape2D" parent="."]
+position = Vector2(10, 360)
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="Derecha" type="CollisionShape2D" parent="."]
+position = Vector2(1270, 360)
+shape = SubResource("RectangleShape2D_vertical")
