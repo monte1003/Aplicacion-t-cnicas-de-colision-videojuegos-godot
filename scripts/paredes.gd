@@ -1,8 +1,5 @@
 extends StaticBody2D
-## Paredes del escenario (StaticBody2D con varias CollisionShape2D).
-##
-## Un StaticBody2D participa en la detección pero el motor nunca lo mueve.
-## Este script solo dibuja cada rectángulo hijo para que se vea el límite.
+## StaticBody2D: participa en la detección, el motor no lo mueve.
 
 
 func _draw() -> void:

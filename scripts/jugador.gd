@@ -1,12 +1,8 @@
 class_name Jugador
 extends CharacterBody2D
-## Jugador controlado con el teclado (CharacterBody2D).
-##
-## Un CharacterBody2D detecta colisiones, pero NO tiene física propia:
-## todo el movimiento y la respuesta se programan. Aquí la respuesta es
-## deslizarse (move_and_slide) y avisar con una señal cuando empieza un choque.
+## CharacterBody2D: sin física propia, el movimiento y la respuesta se programan.
 
-## Se emite una sola vez cuando el jugador empieza a tocar otro cuerpo.
+## Se emite una vez al empezar a tocar otro cuerpo
 signal choque(con: Node, normal: Vector2)
 
 @export var velocidad: float = 320.0
@@ -38,7 +34,7 @@ func _physics_process(_delta: float) -> void:
 	velocity = direccion * velocidad
 	move_and_slide()
 
-	# Respuesta a la colisión: revisar con qué se chocó en este paso.
+	# Respuesta: revisar con qué se chocó en este paso
 	_tocando = get_slide_collision_count() > 0
 	if _tocando and not _tocaba_antes:
 		var info: KinematicCollision2D = get_slide_collision(0)
@@ -47,7 +43,6 @@ func _physics_process(_delta: float) -> void:
 	queue_redraw()
 
 
-## Caja envolvente (AABB) del jugador en coordenadas globales.
 func caja_global() -> Rect2:
 	var mitad: Vector2 = Vector2(lado, lado) / 2.0
 	return Rect2(global_position - mitad, Vector2(lado, lado))

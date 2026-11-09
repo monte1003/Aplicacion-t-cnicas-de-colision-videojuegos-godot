@@ -1,13 +1,7 @@
 class_name Pelota
 extends RigidBody2D
-## Pelota con física (RigidBody2D).
-##
-## Un RigidBody2D SÍ tiene física: no se mueve con código, el motor calcula
-## la respuesta (rebote). Aquí solo se le da una velocidad inicial y se
-## escucha la señal body_entered para contar los rebotes.
-## El rebote lo define el PhysicsMaterial (bounce = 1.0, friction = 0.0).
+## RigidBody2D: el motor calcula el rebote (PhysicsMaterial: bounce 1, friction 0).
 
-## Se emite cuando la pelota choca contra otro cuerpo.
 signal rebote(pelota: Pelota, con: Node)
 
 @export var velocidad_inicial: Vector2 = Vector2(260.0, 180.0)
@@ -22,8 +16,7 @@ var _destello: float = 0.0
 func _ready() -> void:
 	radio = (_forma.shape as CircleShape2D).radius
 	linear_velocity = velocidad_inicial
-	# contact_monitor y max_contacts_reported están activados en pelota.tscn;
-	# sin ellos el RigidBody2D no emite body_entered.
+	# Requiere contact_monitor activado en pelota.tscn
 	body_entered.connect(_al_chocar)
 
 

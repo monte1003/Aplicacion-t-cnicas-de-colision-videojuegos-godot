@@ -1,22 +1,10 @@
 class_name ColisionManual
 extends RefCounted
-## Pruebas de colisión escritas a mano (fase estrecha).
-##
-## Godot ya detecta colisiones internamente. Estas funciones reproducen, con
-## el mismo procedimiento que se explica en la exposición, las pruebas más
-## simples para poder compararlas con lo que reporta el motor.
-##
-## Todas devuelven un Dictionary:
-##   - vacío ({})                       -> NO hay colisión.
-##   - {"normal": Vector2, "profundidad": float} -> SÍ hay colisión.
-## La normal apunta del primer cuerpo hacia el segundo.
-##
-## Fuente teórica: Ericson (2004), Real-Time Collision Detection, cap. 4 y 5;
-## SAT: Kansas State University (s. f.). El código es de elaboración propia
-## del grupo, apoyado con asistencia de IA (ver README_Godot.md).
+## Fase estrecha a mano. Devuelve {} sin colisión o {normal, profundidad}.
+## Fuente: Ericson (2004), Real-Time Collision Detection; SAT: Kansas State Univ. (s. f.).
 
 
-## Círculo contra círculo: hay colisión si |d|^2 < (ra + rb)^2.
+## Choque si |d|² < (ra + rb)²
 static func circulo_circulo(ca: Vector2, ra: float, cb: Vector2, rb: float) -> Dictionary:
 	var d: Vector2 = cb - ca
 	var suma: float = ra + rb
@@ -30,8 +18,7 @@ static func circulo_circulo(ca: Vector2, ra: float, cb: Vector2, rb: float) -> D
 	return {"normal": normal, "profundidad": suma - dist}
 
 
-## Caja contra caja (AABB): los intervalos deben solaparse en X y en Y.
-## El eje con menor solape determina la normal y la profundidad.
+## Choque si hay solape en X y en Y; el eje de menor solape da la normal
 static func aabb_aabb(a: Rect2, b: Rect2) -> Dictionary:
 	var ox: float = minf(a.end.x, b.end.x) - maxf(a.position.x, b.position.x)
 	var oy: float = minf(a.end.y, b.end.y) - maxf(a.position.y, b.position.y)
@@ -50,9 +37,7 @@ static func aabb_aabb(a: Rect2, b: Rect2) -> Dictionary:
 	return {"normal": Vector2(0.0, signo_y), "profundidad": oy}
 
 
-## Círculo contra caja: se busca el punto P de la caja más cercano al centro
-## (recorte o "clamp") y se compara la distancia con el radio.
-## La normal apunta del círculo hacia la caja.
+## Punto de la caja más cercano al centro (clamp) frente al radio
 static func circulo_aabb(centro: Vector2, radio: float, caja: Rect2) -> Dictionary:
 	var p: Vector2 = Vector2(
 		clampf(centro.x, caja.position.x, caja.end.x),
@@ -61,7 +46,6 @@ static func circulo_aabb(centro: Vector2, radio: float, caja: Rect2) -> Dictiona
 	var d: Vector2 = centro - p
 	var dist2: float = d.length_squared()
 	if dist2 == 0.0:
-		# El centro está dentro de la caja: se sale por la cara más cercana.
 		var izq: float = centro.x - caja.position.x
 		var der: float = caja.end.x - centro.x
 		var arr: float = centro.y - caja.position.y
@@ -83,9 +67,7 @@ static func circulo_aabb(centro: Vector2, radio: float, caja: Rect2) -> Dictiona
 	return {"normal": -d / dist, "profundidad": radio - dist}
 
 
-## Teorema del eje separador (SAT) para dos polígonos convexos.
-## Se prueban las normales de las aristas de ambos; si en algún eje las
-## proyecciones no se solapan, no hay colisión (salida temprana).
+## SAT para polígonos convexos: un eje sin solape descarta el choque
 static func sat_poligonos(va: PackedVector2Array, vb: PackedVector2Array) -> Dictionary:
 	var menor: float = INF
 	var eje_menor: Vector2 = Vector2.ZERO
@@ -107,7 +89,7 @@ static func sat_poligonos(va: PackedVector2Array, vb: PackedVector2Array) -> Dic
 	return {"normal": eje_menor, "profundidad": menor}
 
 
-## Proyecta los vértices sobre un eje unitario. Devuelve Vector2(mínimo, máximo).
+## Intervalo (mín, máx) de los vértices sobre el eje
 static func _proyectar(vertices: PackedVector2Array, eje: Vector2) -> Vector2:
 	var minimo: float = INF
 	var maximo: float = -INF

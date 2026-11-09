@@ -1,12 +1,7 @@
 class_name Moneda
 extends Area2D
-## Moneda (Area2D): sirve para DETECTAR, no para bloquear.
-##
-## Un Area2D no choca físicamente; avisa con señales cuando un cuerpo
-## entra o sale de su zona. Su collision_mask solo escanea la capa 2
-## (jugador), así que las pelotas la atraviesan sin activarla.
+## Area2D: detecta con señales, no bloquea. La máscara solo escanea la capa 2 (jugador).
 
-## Se emite cuando el jugador entra en la zona de la moneda.
 signal recogida(moneda: Moneda)
 
 var radio: float = 16.0

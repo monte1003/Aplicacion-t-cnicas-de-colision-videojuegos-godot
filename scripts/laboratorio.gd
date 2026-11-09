@@ -1,16 +1,9 @@
 class_name Laboratorio
 extends Node2D
-## Escena principal: reúne los cuerpos y muestra qué ocurre en cada colisión.
-##
-## Hace cuatro cosas:
-##  1. Cuenta los eventos que emiten los nodos (choques, rebotes, monedas).
-##  2. Dibuja la caja envolvente (AABB) de cada cuerpo (tecla Espacio).
-##  3. Agrupa los cuerpos que se tocan con un recorrido en profundidad (DFS),
-##     tratando cada cuerpo como un vértice y cada contacto como una arista.
-##  4. Compara la prueba manual círculo-AABB con lo que reporta el motor.
+## Escena principal: cuenta eventos, dibuja AABB, agrupa contactos (DFS)
+## y compara la prueba manual círculo-AABB con el motor.
 
-## Margen (px) que se suma al radio en la prueba manual: el motor separa los
-## cuerpos al resolver el contacto, así que casi nunca quedan solapados.
+# El motor separa los cuerpos, así que se suma un margen al radio
 const MARGEN_CONTACTO: float = 2.0
 
 var _choques_jugador: int = 0
@@ -48,7 +41,6 @@ func _physics_process(_delta: float) -> void:
 	var pelotas: Array = get_tree().get_nodes_in_group("pelotas")
 	if not pelotas.is_empty():
 		var primera: Pelota = pelotas[0]
-		# Prueba manual (explicada en la exposición) frente al resultado del motor.
 		var manual: Dictionary = ColisionManual.circulo_aabb(
 			primera.global_position, primera.radio + MARGEN_CONTACTO, _jugador.caja_global()
 		)
@@ -57,14 +49,14 @@ func _physics_process(_delta: float) -> void:
 	_actualizar_texto()
 
 
-## Cuerpos que participan en el grafo de contactos: el jugador y las pelotas.
+## Vértices del grafo de contactos
 func _cuerpos_del_grafo() -> Array:
 	var cuerpos: Array = [_jugador]
 	cuerpos.append_array(get_tree().get_nodes_in_group("pelotas"))
 	return cuerpos
 
 
-## Vecinos de un cuerpo = cuerpos del grafo con los que está en contacto.
+## Aristas: cuerpos del grafo en contacto con `cuerpo`
 func _vecinos(cuerpo: Node) -> Array:
 	var resultado: Array = []
 	if cuerpo is RigidBody2D:
@@ -78,7 +70,7 @@ func _vecinos(cuerpo: Node) -> Array:
 	return resultado
 
 
-## Componentes conexas del grafo de contactos (recorrido DFS con pila).
+## Componentes conexas con DFS (pila + visitados)
 func _contar_grupos() -> int:
 	var visitados: Dictionary = {}
 	var grupos: int = 0
@@ -124,7 +116,6 @@ func _actualizar_texto() -> void:
 	)
 
 
-## Llamado por Superposicion: dibuja AABB y líneas de contacto.
 func dibujar_depuracion(lienzo: CanvasItem) -> void:
 	if not _mostrar_aabb:
 		return
@@ -134,7 +125,6 @@ func dibujar_depuracion(lienzo: CanvasItem) -> void:
 		var mitad: Vector2 = Vector2(pelota.radio, pelota.radio)
 		var caja_p: Rect2 = Rect2(pelota.global_position - mitad, mitad * 2.0)
 		lienzo.draw_rect(caja_p, Color("00e5ff"), false, 2.0)
-	# Aristas del grafo de contactos.
 	for cuerpo in _cuerpos_del_grafo():
 		for vecino in _vecinos(cuerpo):
 			lienzo.draw_line(

@@ -1,7 +1,5 @@
 extends Node2D
-## Capa transparente dibujada por encima de todo el escenario.
-## Pide a Laboratorio que dibuje sobre ella las cajas envolventes (AABB)
-## y las líneas de contacto, para que queden visibles sobre los cuerpos.
+## Capa superior que pide a Laboratorio dibujar AABB y contactos.
 
 
 func _process(_delta: float) -> void:

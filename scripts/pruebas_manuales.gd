@@ -1,12 +1,5 @@
 extends SceneTree
-## Pruebas de las funciones de ColisionManual, sin abrir el editor ni ninguna escena.
-##
-## Ejecutar desde la carpeta del proyecto:
-##   godot --headless --path . --script res://scripts/pruebas_manuales.gd
-## (el ejecutable puede llamarse godot, godot4 o Godot_v4.x_win64_console.exe)
-##
-## Cada caso es un cálculo hecho a mano; los mismos números aparecen como
-## trazas en la presentación. Código de salida: 0 = todo bien, 1 = hay fallos.
+## Pruebas de ColisionManual. Ejecutar: godot --headless --path . --script res://scripts/pruebas_manuales.gd
 
 const Manual := preload("res://scripts/colision_manual.gd")
 
@@ -17,7 +10,6 @@ var _fallos: int = 0
 func _init() -> void:
 	var caja_a: Rect2 = Rect2(-10, -10, 20, 20)
 
-	# Círculo - círculo
 	var r1: Dictionary = Manual.circulo_circulo(Vector2(0, 0), 10.0, Vector2(15, 0), 10.0)
 	_verificar("circulo-circulo: chocan", not r1.is_empty())
 	_verificar("circulo-circulo: profundidad 5", _cerca(r1.get("profundidad", -1.0), 5.0))
@@ -27,14 +19,12 @@ func _init() -> void:
 	var r2: Dictionary = Manual.circulo_circulo(Vector2(0, 0), 10.0, Vector2(25, 0), 10.0)
 	_verificar("circulo-circulo: separados", r2.is_empty())
 
-	# Caja - caja
 	var r3: Dictionary = Manual.aabb_aabb(caja_a, Rect2(5, -5, 20, 20))
 	_verificar("aabb-aabb: profundidad 5", _cerca(r3.get("profundidad", -1.0), 5.0))
 	_verificar("aabb-aabb: normal (1,0)", _cerca_v(r3.get("normal", Vector2.ZERO), Vector2(1, 0)))
 	var r4: Dictionary = Manual.aabb_aabb(caja_a, Rect2(20, -10, 20, 20))
 	_verificar("aabb-aabb: separadas", r4.is_empty())
 
-	# Círculo - caja
 	var r5: Dictionary = Manual.circulo_aabb(Vector2(17, 0), 8.0, caja_a)
 	_verificar("circulo-aabb: profundidad 1", _cerca(r5.get("profundidad", -1.0), 1.0))
 	_verificar("circulo-aabb: normal (-1,0)", _cerca_v(r5.get("normal", Vector2.ZERO), Vector2(-1, 0)))
@@ -47,7 +37,6 @@ func _init() -> void:
 	var r7: Dictionary = Manual.circulo_aabb(Vector2(30, 0), 8.0, caja_a)
 	_verificar("circulo-aabb: separados", r7.is_empty())
 
-	# SAT con rombos de radio 10 (vértices a +-10 de su centro)
 	var rombo_a: PackedVector2Array = _rombo(Vector2(0, 0), 10.0)
 	var r8: Dictionary = Manual.sat_poligonos(rombo_a, _rombo(Vector2(15, 0), 10.0))
 	_verificar("sat rombos: profundidad 3.5355", _cerca(r8.get("profundidad", -1.0), 3.5355))
@@ -56,7 +45,6 @@ func _init() -> void:
 	var r9: Dictionary = Manual.sat_poligonos(rombo_a, _rombo(Vector2(25, 0), 10.0))
 	_verificar("sat rombos: separados", r9.is_empty())
 
-	# SAT con cuadrados (mismo caso que aabb-aabb)
 	var cuadrado_a: PackedVector2Array = PackedVector2Array(
 		[Vector2(-10, -10), Vector2(10, -10), Vector2(10, 10), Vector2(-10, 10)]
 	)

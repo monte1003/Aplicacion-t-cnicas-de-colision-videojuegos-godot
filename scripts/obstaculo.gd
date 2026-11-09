@@ -1,9 +1,5 @@
 extends StaticBody2D
-## Obstáculo triangular (StaticBody2D con CollisionPolygon2D).
-##
-## Es un polígono convexo y está rotado: por eso su caja envolvente (AABB)
-## es mayor que la forma real, y el motor necesita una prueba de fase estrecha
-## precisa (el motor usa SAT para estas formas).
+## Polígono convexo rotado: su AABB es mayor que la forma real (el motor usa SAT).
 
 @onready var _forma: CollisionPolygon2D = $Forma
 
