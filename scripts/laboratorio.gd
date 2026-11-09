@@ -26,7 +26,9 @@ func _ready() -> void:
 	for moneda: Moneda in $Monedas.get_children():
 		moneda.recogida.connect(_al_recoger)
 		_monedas_total += 1
-	add_child(MenuImplementacion.new())
+	# Se carga por ruta para no depender del registro de clases de Godot
+	var menu: GDScript = load("res://scripts/menu_implementacion.gd")
+	add_child(menu.new())
 	_actualizar_texto()
 
 
